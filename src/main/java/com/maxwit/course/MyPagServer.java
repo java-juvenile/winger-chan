@@ -7,10 +7,8 @@ import java.net.Socket;
 
 public class MyPagServer {
     public static void main(String[] args) throws IOException {
-        int port = 55533;
-        ServerSocket server = new ServerSocket(port);
+        ServerSocket server = new ServerSocket(Integer.parseInt(args[0]));
 
-        System.out.println("Server waitting...");
         Socket socket = server.accept();
 
         InputStream inputStream = socket.getInputStream();
@@ -22,10 +20,10 @@ public class MyPagServer {
             ss.append(new String(bytes, 0, len, "UTF-8"));
         }
 
-        //getting the working directory of the current program in Java
+        // getting the working directory of the current program in Java
         String currentPath = System.getProperty("user.dir");
 
-        //use class File to fing a file
+        // use class File to fing a file
         File f = new File(currentPath + ss);
         String message = String.valueOf(f.length());
         OutputStream outputStream = socket.getOutputStream();

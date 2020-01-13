@@ -5,19 +5,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MyDarkClient {
     public static void main(String[] args) throws UnknownHostException, IOException {
-        String host = "127.0.0.1";
-        int port = 55533;
+        String[] url = args[1].split(":");
+        String host = url[0];
+        int port = Integer.parseInt(url[1]);
 
         Socket socket = new Socket(host, port);
         OutputStream outputStream = socket.getOutputStream();
 
-        System.out.println("Please enter a file name in the current directory that you want to download!");
-        Scanner input = new Scanner(System.in);
-        String file = input.nextLine();
+        String[] list = args[0].split(" ");
+        String file = list[1];
 
         socket.getOutputStream().write(file.getBytes("UTF-8"));
         socket.shutdownOutput();
@@ -32,19 +33,26 @@ public class MyDarkClient {
             ss.append(new String(bytes, 0, len, "UTF-8"));
         }
 
-        //getting the working directory of the current program in Java
+        // getting the working directory of the current program in Java
         String currentPath = System.getProperty("user.dir");
-        //use class File to fing a file
-        File f = new File(currentPath + file);
+
+        String patternPath = "(?!.*/).+";
+        Pattern rPath = Pattern.compile(patternPath);
+        Matcher mPath = rPath.matcher(file);
+        String path = null;
+        if (mPath.find()) {
+            path = "/" + mPath.group(0);
+        }
+        // use class File to fing a file
+        File f = new File(currentPath + path);
 
         OutputStream out = null;
-        //instantiation
+        // instantiation
         out = new FileOutputStream(f);
-        //output content and saves file
+        // output content and saves file
         out.write(bytes);
 
         out.close();
-        input.close();
         outputStream.close();
         socket.close();
     }
