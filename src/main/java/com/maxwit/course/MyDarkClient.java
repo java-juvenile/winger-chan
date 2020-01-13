@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 public class MyDarkClient {
     public static void main(String[] args) throws UnknownHostException, IOException {
@@ -14,7 +15,10 @@ public class MyDarkClient {
         Socket socket = new Socket(host, port);
         OutputStream outputStream = socket.getOutputStream();
 
-        String file = "/aaa";
+        System.out.println("Please enter a file name in the current directory that you want to download!");
+        Scanner input = new Scanner(System.in);
+        String file = input.nextLine();
+
         socket.getOutputStream().write(file.getBytes("UTF-8"));
         socket.shutdownOutput();
 
@@ -28,12 +32,19 @@ public class MyDarkClient {
             ss.append(new String(bytes, 0, len, "UTF-8"));
         }
 
-        File f = new File("/Users/morrow" + "/saveTest");
-        OutputStream out = null;
-        out = new FileOutputStream(f);
+        //getting the working directory of the current program in Java
+        String currentPath = System.getProperty("user.dir");
+        //use class File to fing a file
+        File f = new File(currentPath + file);
 
+        OutputStream out = null;
+        //instantiation
+        out = new FileOutputStream(f);
+        //output content and saves file
         out.write(bytes);
 
+        out.close();
+        input.close();
         outputStream.close();
         socket.close();
     }

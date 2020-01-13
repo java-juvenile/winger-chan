@@ -22,10 +22,15 @@ public class MyPagServer {
             ss.append(new String(bytes, 0, len, "UTF-8"));
         }
 
-        File f = new File("/Users/morrow" + ss);
+        //getting the working directory of the current program in Java
+        String currentPath = System.getProperty("user.dir");
+
+        //use class File to fing a file
+        File f = new File(currentPath + ss);
         String message = String.valueOf(f.length());
         OutputStream outputStream = socket.getOutputStream();
         outputStream.write(message.getBytes("UTF-8"));
+
         inputStream.close();
         outputStream.close();
         socket.close();
