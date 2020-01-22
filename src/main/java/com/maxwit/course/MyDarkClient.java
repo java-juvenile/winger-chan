@@ -27,15 +27,27 @@ public class MyDarkClient {
 
     public static void writeFile(StringBuilder ss, File f) throws IOException {
         String str = ss.toString();
-
-        String[] strList = str.split("\n");
-        str = strList[2];
-        String[] firstLine = strList[0].split(" ");
-        
-        if (Integer.parseInt(firstLine[1]) == 200) {
-            OutputStream out = null;        
+        String pattern = "(.+)(?:\n|\r\n)([\\s\\S]+?)(?:\n\n|\r\n\r\n)([\\s\\S]*)";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(str);
+        String responseLine = "";
+        String responseBody = "ERROR";
+        if (m.find()) {
+            responseLine = m.group(1);
+            responseBody = m.group(3);
+        }
+        int responseNum = Integer.parseInt(responseLine.split(" ")[1]);
+        if (responseNum == 200) {
+            OutputStream out = null;
             out = new FileOutputStream(f);
-            byte[] b = str.getBytes("UTF-8");
+            byte[] b = responseBody.getBytes("UTF-8");
+            // output content and saves file
+            out.write(b);
+            out.close();
+        } else if (responseNum == 404){
+            OutputStream out = null;
+            out = new FileOutputStream("Log.log");
+            byte[] b = responseBody.getBytes("UTF-8");
             // output content and saves file
             out.write(b);
             out.close();
@@ -47,8 +59,8 @@ public class MyDarkClient {
         String file = list[1];
         String reqType = "GET";
         String reqHttp = "HTTP/1.1";
-        String reqLine = reqType + " " + file + " " + reqHttp;
-        
+        String reqLine = reqType + " " + file + " " + reqHttp + "\nHost: localhost:8080\n\n";
+
         String[] url = args[1].split(":");
         String host = url[0];
         int port = Integer.parseInt(url[1]);
@@ -66,7 +78,6 @@ public class MyDarkClient {
         while ((len = inputStream.read(bytes)) != -1) {
             ss.append(new String(bytes, 0, len, "UTF-8"));
         }
-
         File f = findFile(file);
         writeFile(ss, f);
 

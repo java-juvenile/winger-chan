@@ -58,6 +58,7 @@ public class MyPagServer {
         InputStream fileInput = new FileInputStream(f);
         byte[] bytes = new byte[1024];
         int len;
+
         while ((len = fileInput.read(bytes)) != -1) {
             outputStream.write(bytes, 0, len);
             outputStream.flush();
@@ -87,6 +88,7 @@ public class MyPagServer {
             OutputStream outputStream = socket.getOutputStream();
 
             StringBuilder ss = inputStream(socket, inputStream);
+            
             File file = fileContent(ss);
             outputStream(socket, outputStream, repHttp, repNum, repStatu, file);
 
